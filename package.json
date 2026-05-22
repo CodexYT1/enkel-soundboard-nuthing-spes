@@ -1,0 +1,33 @@
+{
+  "name": "enkel-soundboard-nuthing-spes",
+  "version": "1.0.0",
+  "description": "Simple loud soundboard with hotkeys and monitoring",
+  "main": "main.js",
+  "author": "CodexYT1",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder"
+  },
+  "build": {
+    "appId": "com.codexyt1.enkelsoundboard",
+    "productName": "Enkel Soundboard",
+    "win": {
+      "target": "nsis"
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "CodexYT1",
+        "repo": "enkel-soundboard-nuthing-spes"
+      }
+    ]
+  },
+  "dependencies": {
+    "electron-updater": "^6.1.8"
+  },
+  "devDependencies": {
+    "electron": "^30.0.0",
+    "electron-builder": "^24.13.3"
+  }
+}

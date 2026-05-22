@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Soundboard</title>
+    <style>
+        body {
+            background: #1e1e1e;
+            color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        #add {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: #2d7d46;
+            padding: 12px 20px;
+            border-radius: 6px;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            z-index: 10;
+        }
+
+        #deviceContainer {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 5px;
+        }
+
+        #deviceSelect, #monitorSelect {
+            background: #333;
+            color: white;
+            border-radius: 5px;
+            border: none;
+            padding: 5px 10px;
+            font-size: 12px;
+        }
+
+        #controlsContainer {
+            position: absolute;
+            top: 70px;
+            right: 20px;
+            z-index: 10;
+            text-align: right;
+            font-size: 12px;
+        }
+
+        #monitorContainer {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            text-align: right;
+            font-size: 12px;
+        }
+
+        input[type="range"] {
+            width: 150px;
+        }
+
+        #buttons {
+            flex: 1;
+            overflow-y: auto;
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            padding-bottom: 20px;
+        }
+
+        .sound-tile {
+            width: 140px;
+            height: 140px;
+            background: #3a3a3a;
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .play-btn {
+            position: absolute;
+            top: 35%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 30px;
+            opacity: 0;
+            transition: opacity 0.2s;
+            cursor: pointer;
+        }
+
+        .sound-tile:hover .play-btn {
+            opacity: 1;
+        }
+
+        .delete-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #b83232;
+            padding: 5px 8px;
+            border-radius: 5px;
+            font-size: 12px;
+            opacity: 0;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .sound-tile:hover .delete-btn {
+            opacity: 1;
+        }
+
+        .volume-slider {
+            position: absolute;
+            left: 50%;
+            bottom: -40px;
+            transform: translateX(-50%);
+            width: 100px;
+            transition: bottom 0.3s ease;
+        }
+
+        .sound-tile:hover .volume-slider {
+            bottom: 10px;
+        }
+
+        .label-text {
+            position: absolute;
+            bottom: 8px;
+            left: 10px;
+            right: 10px;
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        #popup, #deletePopup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #2b2b2b;
+            padding: 20px;
+            border-radius: 10px;
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+            width: 250px;
+            z-index: 20;
+        }
+
+        #mixOut, #monitorOut {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<button id="add">➕ Add Sound</button>
+
+<div id="deviceContainer">
+    <div>Main Output (Sonar Mic):</div>
+    <select id="deviceSelect"></select>
+</div>
+
+<div id="controlsContainer">
+    <div>Master volume (to Discord):</div>
+    <input type="range" id="masterVolume" min="0" max="2" step="0.01" value="1">
+    <div>Boost mode:</div>
+    <label>
+        <input type="checkbox" id="boostToggle">
+        Extra loud
+    </label>
+</div>
+
+<h1>Voice Board</h1>
+
+<div id="buttons"></div>
+
+<div id="popup">
+    <input id="labelInput" placeholder="Label">
+    <input id="keyInput" placeholder="Press ALT or CTRL…" readonly>
+    <button id="confirm">Add</button>
+</div>
+
+<div id="deletePopup">
+    <div>Are you sure?</div>
+    <button id="deleteYes">Delete</button>
+    <button class="cancel" id="deleteNo">Cancel</button>
+</div>
+
+<div id="monitorContainer">
+    <label>
+        <input type="checkbox" id="monitorToggle">
+        Hear my soundboard
+    </label>
+    <br>
+    Monitor device:
+    <select id="monitorSelect"></select>
+    <br>
+    Monitor volume:
+    <input type="range" id="monitorVolume" min="0" max="2" step="0.01" value="1">
+</div>
+
+<audio id="mixOut" autoplay></audio>
+<audio id="monitorOut" autoplay></audio>
+
+<script src="renderer.js"></script>
+</body>
+</html>
