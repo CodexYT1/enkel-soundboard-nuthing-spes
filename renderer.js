@@ -13,7 +13,6 @@ const deleteNo = document.getElementById("deleteNo");
 const deviceSelect = document.getElementById("deviceSelect");
 const monitorSelect = document.getElementById("monitorSelect");
 const monitorToggle = document.getElementById("monitorToggle");
-const monitorVolumeSlider = document.getElementById("monitorVolume");
 
 const mixOut = document.getElementById("mixOut");
 const monitorOut = document.getElementById("monitorOut");
@@ -31,7 +30,7 @@ let mixDestination = null;
 let soundboardGain = null;
 
 let monitorEnabled = false;
-let monitorVolume = 1.0;
+let monitorVolume = 1.0; // fixed volume since slider is removed
 
 function toFileUrl(path) {
     return "file://" + path.replace(/\\/g, "/");
@@ -43,27 +42,15 @@ async function initAudioGraph() {
     audioCtx = new AudioContext();
     mixDestination = audioCtx.createMediaStreamDestination();
 
-    // ============================================================
-    // 🔊 SOUND BOOST SECTION — CHANGE THIS NUMBER TO ADJUST LOUDNESS
-    // ============================================================
     soundboardGain = audioCtx.createGain();
-    soundboardGain.gain.value = 10;   // <<< BOOST HERE (default 4.5x)
-    // Recommended safe values:
-    // 3.0 = loud
-    // 4.0 = very loud
-    // 5.0 = extremely loud (still safe)
-    // ============================================================
-
+    soundboardGain.gain.value = 2;
     soundboardGain.connect(mixDestination);
 
-    // Keep graph alive
     const keepAliveOsc = audioCtx.createOscillator();
     const keepAliveGain = audioCtx.createGain();
     keepAliveGain.gain.value = 0.00001;
     keepAliveOsc.connect(keepAliveGain).connect(soundboardGain);
     keepAliveOsc.start();
-
-    console.log("Mic capture skipped (Sonar handles your real mic).");
 
     mixOut.srcObject = mixDestination.stream;
 }
@@ -104,10 +91,6 @@ monitorToggle.addEventListener("change", () => {
     monitorEnabled = monitorToggle.checked;
 });
 
-monitorVolumeSlider.addEventListener("input", () => {
-    monitorVolume = parseFloat(monitorVolumeSlider.value);
-});
-
 function playSound(entry) {
     entry.audio.currentTime = 0;
     entry.audio.play();
@@ -132,11 +115,6 @@ function createTile(entry) {
     const tile = document.createElement("div");
     tile.className = "sound-tile";
     tile.dataset.key = entry.keybind;
-
-    const playBtn = document.createElement("div");
-    playBtn.className = "play-btn";
-    playBtn.textContent = "▶";
-    playBtn.onclick = () => playSound(entry);
 
     const deleteBtn = document.createElement("div");
     deleteBtn.className = "delete-btn";
@@ -167,7 +145,6 @@ function createTile(entry) {
         popup.style.display = "flex";
     };
 
-    tile.appendChild(playBtn);
     tile.appendChild(deleteBtn);
     tile.appendChild(slider);
     tile.appendChild(labelText);
@@ -267,8 +244,6 @@ confirmBtn.onclick = async () => {
     audio.volume = 1;
 
     const source = audioCtx.createMediaElementSource(audio);
-
-    // Connect sound to boosted gain node
     source.connect(soundboardGain);
 
     const entry = { keybind, label, file: pendingFile, audio, source };

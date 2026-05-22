@@ -133,7 +133,7 @@ app.on("will-quit", () => {
 // =========================
 ipcMain.handle("pick-sound", async () => {
     const result = await dialog.showOpenDialog({
-        filters: [{ name: "Audio", extensions: ["mp3", "wav", "ogg"] }],
+        filters: [{ name: "Audio", extensions: ["mp3", "wav", "ogg", "mp4"] }],
         properties: ["openFile"]
     });
 
