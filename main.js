@@ -38,6 +38,9 @@ function createWindow() {
     mainWindow = new BrowserWindow({
         width: 800,
         height: 700,
+        frame: false,
+        autoHideMenuBar: true,
+        titleBarStyle: "hidden",
         webPreferences: {
             preload: path.join(__dirname, "preload.js"),
             contextIsolation: true,
@@ -49,6 +52,14 @@ function createWindow() {
 
     mainWindow.webContents.on("did-finish-load", () => {
         mainWindow.webContents.send("load-sounds", loadSounds());
+    });
+
+    mainWindow.on("maximize", () => {
+        mainWindow.webContents.send("window-maximized");
+    });
+
+    mainWindow.on("unmaximize", () => {
+        mainWindow.webContents.send("window-restored");
     });
 
     mainWindow.on("closed", () => {
@@ -165,4 +176,24 @@ ipcMain.on("unregister-hotkey", (event, keybind) => {
     const accel = formatAccelerator(keybind);
     if (!accel) return;
     globalShortcut.unregister(accel);
+});
+
+ipcMain.on("window-minimize", (event) => {
+    const win = BrowserWindow.fromWebContents(event.sender);
+    if (win) win.minimize();
+});
+
+ipcMain.on("window-maximize-toggle", (event) => {
+    const win = BrowserWindow.fromWebContents(event.sender);
+    if (!win) return;
+    if (win.isMaximized()) {
+        win.unmaximize();
+    } else {
+        win.maximize();
+    }
+});
+
+ipcMain.on("window-close", (event) => {
+    const win = BrowserWindow.fromWebContents(event.sender);
+    if (win) win.close();
 });
